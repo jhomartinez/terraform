@@ -7,6 +7,9 @@ provider "aws"{
 resource "aws_instance" "prod"{
     instance_type = "t2.micro"
     ami = "ami-08b6f2a5c291246a0"
+    tags = {
+        Name = "test-ec2"
+    }
 }
 
 data "aws_vpc" "default" {
@@ -31,4 +34,9 @@ resource "aws_security_group" "http_https" {
         protocol = "tcp"
         cidr_blocks = [data.aws_vpc.default.cidr_block, "0.0.0.0/0"]
     }
+}
+
+resource "aws_network_interface_sg_attachment" "sg_attachment"{
+    security_group_id = aws_security_group.http_https.id
+    network_interface_id = aws_instance.prod.primary_network_interface_id
 }
