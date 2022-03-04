@@ -10,6 +10,9 @@ resource "aws_instance" "prod"{
     tags = {
         Name = "test-ec2"
     }
+    key_name = aws_key_pair.user_ssh.key_name
+    user_data = file("./scripts/init.sh")
+    security_groups = []
 }
 
 data "aws_vpc" "default" {
@@ -39,4 +42,9 @@ resource "aws_security_group" "http_https" {
 resource "aws_network_interface_sg_attachment" "sg_attachment"{
     security_group_id = aws_security_group.http_https.id
     network_interface_id = aws_instance.prod.primary_network_interface_id
+}
+
+resource "aws_key_pair" "user_ssh" {
+    key_name = "ssh_instance_key"
+    public_key = file("~/.ssh/id_rsa.pub")
 }
