@@ -20,7 +20,7 @@ data "aws_vpc" "default" {
 }
 
 resource "aws_security_group" "http_https" {
-    name = "http_https"
+    name = "http_https_ssh"
     description = "Allows http and https trafics only"
     vpc_id = data.aws_vpc.default.id
     ingress {
@@ -28,14 +28,21 @@ resource "aws_security_group" "http_https" {
         from_port = 443
         to_port = 443
         protocol = "tcp"
-        cidr_blocks = [data.aws_vpc.default.cidr_block, "0.0.0.0/0"]
+        cidr_blocks = [data.aws_vpc.default.cidr_block, "10.1.96.0/24"]
     }
     ingress {
         description = "Http from the internet"
         from_port = 80
         to_port = 80
         protocol = "tcp"
-        cidr_blocks = [data.aws_vpc.default.cidr_block, "0.0.0.0/0"]
+        cidr_blocks = [data.aws_vpc.default.cidr_block, "10.1.96.0/24"]
+    }
+    ingress {
+        description = "SSH"
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
     }
 }
 
